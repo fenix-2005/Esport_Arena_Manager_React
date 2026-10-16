@@ -1,0 +1,72 @@
+:root {
+  --color-primario: #6f42c1;
+  --color-secundario: #0dcaf0;
+  --fondo-oscuro: #121212;
+  --fondo-tarjeta: #1e1e24;
+  --color-alerta: #ff6b6b;
+  --color-ok: #51cf66;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--fondo-oscuro);
+  color: #f8f9fa;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+header, footer {
+  background-color: #18181c;
+  border-bottom: 1px solid #2d2d35;
+}
+
+.titulo-principal {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-secundario);
+  margin: 0;
+}
+
+.tarjeta {
+  background-color: var(--fondo-tarjeta);
+  color: #ffffff;
+}
+
+.boton-primario {
+  background-color: var(--color-primario);
+  color: #ffffff;
+  border: none;
+}
+
+.boton-primario:hover {
+  background-color: #59339d;
+  color: #ffffff;
+}
+
+.seccion-video {
+  margin-bottom: 60px;
+}
+
+.video-centrado {
+  max-width: 700px;
+  margin: 0 auto;
+  border: 1px solid var(--color-primario);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.alerta {
+  color: var(--color-alerta);
+  font-weight: 600;
+  display: block;
+  margin-top: 4px;
+}
+
+.ok {
+  color: var(--color-ok);
+  font-weight: 600;
+}
