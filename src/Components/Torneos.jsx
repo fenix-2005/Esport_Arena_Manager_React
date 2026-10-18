@@ -30,7 +30,7 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
     setErrorFiltro('')
   }
 
-  // Renderizado condicional: si hay un torneo seleccionado en App, muestra su Detalle
+  
   if (torneoDetalle) {
     return (
       <div className="card tarjeta border-secondary p-4 mx-auto" style={{ maxWidth: 700 }}>
@@ -63,7 +63,7 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
     )
   }
 
-  // Valor derivado: lista filtrada en cada render (Sección 12.3 y 15.2)
+  
   const texto = busqueda.toLowerCase()
   const fechasValidas = validarRangoFechas(fechaInicio, fechaFin)
 
