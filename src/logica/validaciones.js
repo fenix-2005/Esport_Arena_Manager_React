@@ -14,7 +14,7 @@ export function validarContrasena(contrasena) {
   return limpia.length >= 4 && limpia.length <= 10
 }
 
-// 3. Validar RUN chileno: sin puntos ni guion, 7 a 9 caracteres (Módulo 11)
+// 3. Validar RUN chileno: sin puntos ni guion, 7 a 9 caracteres 
 export function validarRun(run) {
   if (!run) return false
   const limpio = run.trim()

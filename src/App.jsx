@@ -1,121 +1,90 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { torneosIniciales } from './logica/datos'
+import Inicio from './components/Inicio'
+import Torneos from './components/Torneos'
+import Inscripcion from './components/Inscripcion'
+import Equipos from './components/Equipos'
+import Perfil from './components/Perfil'
+
+const SECCIONES = [
+  { id: 'inicio', titulo: 'Inicio' },
+  { id: 'torneos', titulo: 'Torneos' },
+  { id: 'inscripcion', titulo: 'Inscripción' },
+  { id: 'equipos', titulo: 'Equipos' },
+  { id: 'perfil', titulo: 'Perfil' },
+]
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activa, setActiva] = useState('inicio')
+  const [torneos, setTorneos] = useState(torneosIniciales)
+  const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
+
+  const irADetalleTorneo = (torneo) => {
+    setTorneoSeleccionado(torneo)
+    setActiva('torneos')
+  }
+
+  const agregarTorneo = (nuevo) => {
+    setTorneos([...torneos, nuevo])
+  }
+
+  const eliminarTorneo = (id) => {
+    setTorneos(torneos.filter((t) => t.id !== id))
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="d-flex flex-column min-vh-100">
+      <header className="py-3 shadow-sm">
+        <div className="container d-flex flex-wrap justify-content-between align-items-center">
+          <h1 className="titulo-principal">eSports Arena Manager</h1>
+          <nav>
+            <ul className="nav gap-1">
+              {SECCIONES.map((s) => (
+                <li key={s.id} className="nav-item">
+                  <button
+                    type="button"
+                    className={activa === s.id ? 'btn boton-primario' : 'btn btn-dark text-light'}
+                    onClick={() => {
+                      setTorneoSeleccionado(null)
+                      setActiva(s.id)
+                    }}
+                  >
+                    {s.titulo}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="container my-5">
+        {activa === 'inicio' && (
+          <Inicio torneos={torneos} onIrADetalle={irADetalleTorneo} />
+        )}
+        {activa === 'torneos' && (
+          <Torneos
+            torneos={torneos}
+            torneoDetalle={torneoSeleccionado}
+            onSeleccionarDetalle={setTorneoSeleccionado}
+            onIrAInscripcion={() => setActiva('inscripcion')}
+          />
+        )}
+        {activa === 'inscripcion' && <Inscripcion />}
+        {activa === 'equipos' && <Equipos />}
+        {activa === 'perfil' && (
+          <Perfil
+            torneos={torneos}
+            onAgregarTorneo={agregarTorneo}
+            onEliminarTorneo={eliminarTorneo}
+          />
+        )}
+      </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <footer className="py-4 mt-auto text-center">
+        <p className="mb-0 text-secondary">© 2026 eSports Arena Manager. Todos los derechos reservados.</p>
+      </footer>
+    </div>
   )
 }
 

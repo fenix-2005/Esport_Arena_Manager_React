@@ -35,7 +35,7 @@ module.exports = function (config) {
     esbuild: {
       target: 'es2022',
       jsx: 'automatic', // permite escribir JSX sin importar React
-      loader: { '.js': 'jsx' },
+      loader: { '.js': 'jsx', '.png': 'dataurl', '.jpg': 'dataurl', '.svg': 'dataurl' },
       plugins: [specsJsx], // permite specs con extensión .jsx
     },
 
