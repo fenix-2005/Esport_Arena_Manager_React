@@ -1,4 +1,12 @@
-import heroImg from '../assets/hero.png'
+import val_log from '../assets/val_log.jpg'
+import cs_log from '../assets/cs_log.png'
+import lol_log from '../assets/lol_log.jpg'
+
+export const LogosJuegos = {
+  Valorant: val_log,
+  'Counter-Strike 2': cs_log,
+  'League of Legends': lol_log,
+}
 
 export const torneosIniciales = [
   {
@@ -13,7 +21,7 @@ export const torneosIniciales = [
     cuposCriticos: 3,
     precio: 0,
     descripcion: 'Torneo oficial universitario 5v5 en modalidad eliminación directa.',
-    imagen: heroImg,
+    imagen: val_log,
   },
   {
     id: 2,
@@ -27,7 +35,7 @@ export const torneosIniciales = [
     cuposCriticos: 4,
     precio: 5000,
     descripcion: 'Competencia táctica por equipos con fase de grupos y gran final.',
-    imagen: heroImg,
+    imagen: cs_log,
   },
 {
     id: 3,
@@ -41,7 +49,7 @@ export const torneosIniciales = [
     cuposCriticos: 2,
     precio: 2500,
     descripcion: 'La grieta del invocador reúne a las mejores escuadras de la región.',
-    imagen: heroImg,
+    imagen: lol_log,
   },
 ]
 

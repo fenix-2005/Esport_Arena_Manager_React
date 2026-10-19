@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { validarApodo } from '../logica/validaciones'
-import heroImg from '../assets/hero.png'
+import { LogosJuegos } from '../logica/datos'
 
 function Perfil({ torneos, onAgregarTorneo, onEliminarTorneo }) {
   const [rol, setRol] = useState('Visitante')
@@ -49,7 +49,7 @@ function Perfil({ torneos, onAgregarTorneo, onEliminarTorneo }) {
       cuposCriticos: 3,
       precio: Number(nuevoTorneo.precio),
       descripcion: 'Torneo creado desde el panel de administración.',
-      imagen: heroImg,
+      imagen: LogosJuegos[nuevoTorneo.juego] ?? LogosJuegos['Valorant'],
     })
     setNuevoTorneo({ nombre: '', juego: 'Valorant', cupos: 16, precio: 0 })
     setErrorAdmin('')
