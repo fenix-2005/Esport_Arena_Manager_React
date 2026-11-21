@@ -7,7 +7,7 @@ import Torneos from './components/Torneos'
 import Inscripcion from './components/Inscripcion'
 import Equipos from './components/Equipos'
 import Perfil from './components/Perfil'
-import Login from './pages/Login'
+import Login from './components/Login'
 import RutaProtegida from './auth/RutaProtegida'
 
 function App() {
@@ -83,7 +83,7 @@ function App() {
               }
             />
             <Route path="/equipos" element={<Equipos />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/Login" element={<Login />} />
             <Route
               path="/inscripcion"
               element={
