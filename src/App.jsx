@@ -22,13 +22,13 @@ function App() {
     const aviso = setTimeout(() => setLento(true), 4000)
 
     torneosService
-      .listar()
-      .then(setTorneos)
-      .catch((e) => setError(e.message))
-      .finally(() => {
-        clearTimeout(aviso)
-        setCargando(false)
-      })
+        .listar()
+        .then(setTorneos)
+        .catch((e) => setError(e.message))
+        .finally(() => {
+          clearTimeout(aviso)
+          setCargando(false)
+        })
 
     return () => clearTimeout(aviso)
   }, [])
@@ -49,71 +49,75 @@ function App() {
   }
 
   return (
-    <div className="d-flex flex-column min-vh-100">
-      <Navbar />
+      <div className="d-flex flex-column min-vh-100">
+        <Navbar />
 
-      <main className="container my-5">
-        {cargando ? (
-          <div className="text-center py-5 text-light">
-            <div className="spinner-border text-warning mb-3" role="status" />
-            <p className="mb-1">Cargando torneos...</p>
-            {lento && (
-              <p className="text-warning small">
-                El servidor se está activando: puede tardar un minuto.
-              </p>
-            )}
-          </div>
-        ) : error ? (
-          <div className="alert alert-danger">{error}</div>
-        ) : (
-          <Routes>
-            <Route
-              path="/"
-              element={<Inicio torneos={torneos} onIrADetalle={irADetalleTorneo} />}
-            />
-            <Route
-              path="/torneos"
-              element={
-                <Torneos
-                  torneos={torneos}
-                  torneoDetalle={torneoSeleccionado}
-                  onSeleccionarDetalle={setTorneoSeleccionado}
-                  onIrAInscripcion={() => navigate('/inscripcion')}
+        <main className="container my-5">
+          {error && (
+              <div className="alert alert-warning mb-4">
+                No se pudieron cargar los torneos: {error}
+              </div>
+          )}
+
+          {cargando ? (
+              <div className="text-center py-5 text-light">
+                <div className="spinner-border text-warning mb-3" role="status" />
+                <p className="mb-1">Cargando torneos...</p>
+                {lento && (
+                    <p className="text-warning small">
+                      El servidor se está activando: puede tardar un minuto.
+                    </p>
+                )}
+              </div>
+          ) : (
+              <Routes>
+                <Route
+                    path="/"
+                    element={<Inicio torneos={torneos} onIrADetalle={irADetalleTorneo} />}
                 />
-              }
-            />
-            <Route path="/equipos" element={<Equipos />} />
-            <Route path="/Login" element={<Login />} />
-            <Route
-              path="/inscripcion"
-              element={
-                <RutaProtegida>
-                  <Inscripcion />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/perfil"
-              element={
-                <RutaProtegida>
-                  <Perfil
-                    torneos={torneos}
-                    onAgregarTorneo={agregarTorneo}
-                    onEliminarTorneo={eliminarTorneo}
-                  />
-                </RutaProtegida>
-              }
-            />
-          </Routes>
-        )}
-      </main>
+                <Route
+                    path="/torneos"
+                    element={
+                      <Torneos
+                          torneos={torneos}
+                          torneoDetalle={torneoSeleccionado}
+                          onSeleccionarDetalle={setTorneoSeleccionado}
+                          onIrAInscripcion={() => navigate('/inscripcion')}
+                      />
+                    }
+                />
+                <Route path="/equipos" element={<Equipos />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                    path="/inscripcion"
+                    element={
+                      <RutaProtegida>
+                        <Inscripcion torneos={torneos} />
+                      </RutaProtegida>
+                    }
+                />
+                <Route
+                    path="/perfil"
+                    element={
+                      <RutaProtegida>
+                        <Perfil
+                            torneos={torneos}
+                            onAgregarTorneo={agregarTorneo}
+                            onEliminarTorneo={eliminarTorneo}
+                        />
+                      </RutaProtegida>
+                    }
+                />
+              </Routes>
+          )}
+        </main>
 
-      <footer className="py-4 mt-auto text-center">
-        <p className="mb-0 text-secondary">
-          © 2026 eSports Arena Manager. Todos los derechos reservados.
-        </p>
-      </footer>
-    </div>
+        <footer className="py-4 mt-auto text-center">
+          <p className="mb-0 text-secondary">
+            © 2026 eSports Arena Manager. Todos los derechos reservados.
+          </p>
+        </footer>
+      </div>
   )
 }
 
