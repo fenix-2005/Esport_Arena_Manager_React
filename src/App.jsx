@@ -1,123 +1,90 @@
-import { useEffect, useState } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom'
-import { torneosService } from './services/torneos'
-import Navbar from './components/Navbar'
+import { useState } from 'react'
+import { torneosIniciales } from './logica/datos'
 import Inicio from './components/Inicio'
 import Torneos from './components/Torneos'
 import Inscripcion from './components/Inscripcion'
 import Equipos from './components/Equipos'
 import Perfil from './components/Perfil'
-import Login from './components/Login'
-import RutaProtegida from './auth/RutaProtegida'
+
+const SECCIONES = [
+  { id: 'inicio', titulo: 'Inicio' },
+  { id: 'torneos', titulo: 'Torneos' },
+  { id: 'inscripcion', titulo: 'Inscripción' },
+  { id: 'equipos', titulo: 'Equipos' },
+  { id: 'perfil', titulo: 'Perfil' },
+]
 
 function App() {
-  const navigate = useNavigate()
-  const [torneos, setTorneos] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [lento, setLento] = useState(false)
-  const [error, setError] = useState(null)
+  const [activa, setActiva] = useState('inicio')
+  const [torneos, setTorneos] = useState(torneosIniciales)
   const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
-
-  useEffect(() => {
-    const aviso = setTimeout(() => setLento(true), 4000)
-
-    torneosService
-        .listar()
-        .then(setTorneos)
-        .catch((e) => setError(e.message))
-        .finally(() => {
-          clearTimeout(aviso)
-          setCargando(false)
-        })
-
-    return () => clearTimeout(aviso)
-  }, [])
 
   const irADetalleTorneo = (torneo) => {
     setTorneoSeleccionado(torneo)
-    navigate('/torneos')
+    setActiva('torneos')
   }
 
-  const agregarTorneo = async (nuevo) => {
-    const creado = await torneosService.crear(nuevo)
-    setTorneos([...torneos, creado])
+  const agregarTorneo = (nuevo) => {
+    setTorneos([...torneos, nuevo])
   }
 
-  const eliminarTorneo = async (id) => {
-    await torneosService.eliminar(id)
+  const eliminarTorneo = (id) => {
     setTorneos(torneos.filter((t) => t.id !== id))
   }
 
   return (
-      <div className="d-flex flex-column min-vh-100">
-        <Navbar />
+    <div className="d-flex flex-column min-vh-100">
+      <header className="py-3 shadow-sm">
+        <div className="container d-flex flex-wrap justify-content-between align-items-center">
+          <h1 className="titulo-principal">eSports Arena Manager</h1>
+          <nav>
+            <ul className="nav gap-1">
+              {SECCIONES.map((s) => (
+                <li key={s.id} className="nav-item">
+                  <button
+                    type="button"
+                    className={activa === s.id ? 'btn boton-primario' : 'btn btn-dark text-light'}
+                    onClick={() => {
+                      setTorneoSeleccionado(null)
+                      setActiva(s.id)
+                    }}
+                  >
+                    {s.titulo}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </header>
 
-        <main className="container my-5">
-          {error && (
-              <div className="alert alert-warning mb-4">
-                No se pudieron cargar los torneos: {error}
-              </div>
-          )}
+      <main className="container my-5">
+        {activa === 'inicio' && (
+          <Inicio torneos={torneos} onIrADetalle={irADetalleTorneo} />
+        )}
+        {activa === 'torneos' && (
+          <Torneos
+            torneos={torneos}
+            torneoDetalle={torneoSeleccionado}
+            onSeleccionarDetalle={setTorneoSeleccionado}
+            onIrAInscripcion={() => setActiva('inscripcion')}
+          />
+        )}
+        {activa === 'inscripcion' && <Inscripcion />}
+        {activa === 'equipos' && <Equipos />}
+        {activa === 'perfil' && (
+          <Perfil
+            torneos={torneos}
+            onAgregarTorneo={agregarTorneo}
+            onEliminarTorneo={eliminarTorneo}
+          />
+        )}
+      </main>
 
-          {cargando ? (
-              <div className="text-center py-5 text-light">
-                <div className="spinner-border text-warning mb-3" role="status" />
-                <p className="mb-1">Cargando torneos...</p>
-                {lento && (
-                    <p className="text-warning small">
-                      El servidor se está activando: puede tardar un minuto.
-                    </p>
-                )}
-              </div>
-          ) : (
-              <Routes>
-                <Route
-                    path="/"
-                    element={<Inicio torneos={torneos} onIrADetalle={irADetalleTorneo} />}
-                />
-                <Route
-                    path="/torneos"
-                    element={
-                      <Torneos
-                          torneos={torneos}
-                          torneoDetalle={torneoSeleccionado}
-                          onSeleccionarDetalle={setTorneoSeleccionado}
-                          onIrAInscripcion={() => navigate('/inscripcion')}
-                      />
-                    }
-                />
-                <Route path="/equipos" element={<Equipos />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                    path="/inscripcion"
-                    element={
-                      <RutaProtegida>
-                        <Inscripcion torneos={torneos} />
-                      </RutaProtegida>
-                    }
-                />
-                <Route
-                    path="/perfil"
-                    element={
-                      <RutaProtegida>
-                        <Perfil
-                            torneos={torneos}
-                            onAgregarTorneo={agregarTorneo}
-                            onEliminarTorneo={eliminarTorneo}
-                        />
-                      </RutaProtegida>
-                    }
-                />
-              </Routes>
-          )}
-        </main>
-
-        <footer className="py-4 mt-auto text-center">
-          <p className="mb-0 text-secondary">
-            © 2026 eSports Arena Manager. Todos los derechos reservados.
-          </p>
-        </footer>
-      </div>
+      <footer className="py-4 mt-auto text-center">
+        <p className="mb-0 text-secondary">© 2026 eSports Arena Manager. Todos los derechos reservados.</p>
+      </footer>
+    </div>
   )
 }
 
