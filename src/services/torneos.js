@@ -1,17 +1,22 @@
 import { solicitar } from './api'
 
-const URL = import.meta.env.VITE_TOURNAMENTS_URL
+const TOURNAMENTS_URL = import.meta.env.VITE_TOURNAMENTS_URL
 
 export const torneosService = {
-  listar: (opciones) => solicitar(URL, '/torneos', opciones),
-  obtener: (id, opciones) => solicitar(URL, `/torneos/${id}`, opciones),
-  crear: (torneo) =>
-    solicitar(URL, '/torneos', {
+  listar: () => solicitar(TOURNAMENTS_URL, '/torneos'),
+  obtener: (id) => solicitar(TOURNAMENTS_URL, `/torneos/${id}`),
+  crear: (datos) =>
+    solicitar(TOURNAMENTS_URL, '/torneos', {
       method: 'POST',
-      body: JSON.stringify(torneo),
+      body: JSON.stringify(datos),
+    }),
+  actualizar: (id, datos) =>
+    solicitar(TOURNAMENTS_URL, `/torneos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(datos),
     }),
   eliminar: (id) =>
-    solicitar(URL, `/torneos/${id}`, {
+    solicitar(TOURNAMENTS_URL, `/torneos/${id}`, {
       method: 'DELETE',
     }),
 }
