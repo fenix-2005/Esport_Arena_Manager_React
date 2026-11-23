@@ -115,18 +115,34 @@ function Equipos() {
 
               <form onSubmit={registrarEquipo}>
                 <div className="mb-3">
-                  <label className="form-label text-light">Nombre del Equipo *</label>
+                  <label htmlFor="equipo-nombre" className="form-label text-light">
+                    Nombre del Equipo *
+                  </label>
                   <input
+                    id="equipo-nombre"
                     name="nombre"
+                    autoComplete="organization"
+                    list="sugerencias-equipos"
                     value={form.nombre}
                     onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                     className="form-control bg-dark text-light border-secondary"
                     placeholder="Ej: T1 Esports"
+                    required
                   />
+                  <datalist id="sugerencias-equipos">
+                    <option value="KRU Esports" />
+                    <option value="Leviatan" />
+                    <option value="Movistar R7" />
+                    <option value="T1 Esports" />
+                  </datalist>
                 </div>
+
                 <div className="mb-3">
-                  <label className="form-label text-light">Juego Principal *</label>
+                  <label htmlFor="equipo-juego" className="form-label text-light">
+                    Juego Principal *
+                  </label>
                   <select
+                    id="equipo-juego"
                     name="juegoPrincipalId"
                     value={form.juegoPrincipalId}
                     onChange={(e) => setForm({ ...form, juegoPrincipalId: e.target.value })}
@@ -139,6 +155,7 @@ function Equipos() {
                     ))}
                   </select>
                 </div>
+
                 <button type="submit" className="btn boton-primario w-100" disabled={enviando}>
                   {enviando ? 'Registrando...' : 'Registrar Equipo'}
                 </button>
@@ -153,8 +170,13 @@ function Equipos() {
           <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <h4 className="text-info m-0">Equipos Registrados ({equiposFiltrados.length})</h4>
             <div className="d-flex align-items-center gap-2">
+              <label htmlFor="equipo-buscar" className="visually-hidden">
+                Buscar equipo
+              </label>
               <input
+                id="equipo-buscar"
                 type="search"
+                autoComplete="off"
                 className="form-control form-control-sm bg-dark text-light border-secondary w-auto"
                 placeholder="Buscar por nombre o juego..."
                 value={busqueda}

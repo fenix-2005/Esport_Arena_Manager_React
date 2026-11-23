@@ -39,21 +39,32 @@ export default function Registro() {
           <h2 className="text-info mb-3">Crear cuenta</h2>
           <form onSubmit={crearCuenta}>
             <div className="mb-3">
-              <label className="form-label">Correo electrónico</label>
+              <label htmlFor="reg-email" className="form-label">
+                Correo electrónico
+              </label>
               <input
+                id="reg-email"
                 name="email"
                 type="email"
+                autoComplete="email"
+                placeholder="jugador@duoc.cl"
                 className="form-control bg-dark text-light border-secondary"
                 value={form.email}
                 onChange={cambiar}
                 required
               />
             </div>
+
             <div className="mb-3">
-              <label className="form-label">Contraseña (mínimo 6 caracteres)</label>
+              <label htmlFor="reg-password" className="form-label">
+                Contraseña (mínimo 6 caracteres)
+              </label>
               <input
+                id="reg-password"
                 name="password"
                 type="password"
+                autoComplete="new-password"
+                placeholder="Mínimo 6 caracteres"
                 className="form-control bg-dark text-light border-secondary"
                 value={form.password}
                 onChange={cambiar}
@@ -61,11 +72,17 @@ export default function Registro() {
                 required
               />
             </div>
+
             <div className="mb-3">
-              <label className="form-label">Confirmar contraseña</label>
+              <label htmlFor="reg-confirmar" className="form-label">
+                Confirmar contraseña
+              </label>
               <input
+                id="reg-confirmar"
                 name="confirmar"
                 type="password"
+                autoComplete="new-password"
+                placeholder="Repite tu contraseña"
                 className="form-control bg-dark text-light border-secondary"
                 value={form.confirmar}
                 onChange={cambiar}
@@ -73,11 +90,13 @@ export default function Registro() {
                 required
               />
             </div>
+
             <button type="submit" className="btn boton-primario w-100" disabled={enviando}>
               {enviando ? 'Creando cuenta...' : 'Registrarse'}
             </button>
             {error && <p className="text-danger mt-3 mb-0">{error}</p>}
           </form>
+
           <p className="text-secondary small text-center mt-3 mb-0">
             ¿Ya tienes cuenta?{' '}
             <Link to="/login" className="text-info">

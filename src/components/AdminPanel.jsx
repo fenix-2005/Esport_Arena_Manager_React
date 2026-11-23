@@ -231,17 +231,34 @@ export default function AdminPanel({
         <form onSubmit={guardarTorneo}>
           <div className="row g-2">
             <div className="col-md-6">
-              <label className="form-label text-light small">Nombre *</label>
+              <label htmlFor="torneo-nombre" className="form-label text-light small">
+                Nombre *
+              </label>
               <input
+                id="torneo-nombre"
+                name="nombre"
+                autoComplete="off"
+                list="sugerencias-torneos"
                 className="form-control bg-dark text-light border-secondary"
                 placeholder="Ej: Copa Invierno 2026"
                 value={form.nombre}
                 onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                required
               />
+              <datalist id="sugerencias-torneos">
+                <option value="Copa Valorant 2026" />
+                <option value="Torneo Abierto CS2" />
+                <option value="Liga LoL Apertura" />
+              </datalist>
             </div>
+
             <div className="col-md-3">
-              <label className="form-label text-light small">Juego *</label>
+              <label htmlFor="torneo-juego" className="form-label text-light small">
+                Juego *
+              </label>
               <select
+                id="torneo-juego"
+                name="juegoId"
                 className="form-select bg-dark text-light border-secondary"
                 value={form.juegoId}
                 onChange={(e) => setForm({ ...form, juegoId: e.target.value })}
@@ -253,9 +270,14 @@ export default function AdminPanel({
                 ))}
               </select>
             </div>
+
             <div className="col-md-3">
-              <label className="form-label text-light small">Modalidad *</label>
+              <label htmlFor="torneo-modalidad" className="form-label text-light small">
+                Modalidad *
+              </label>
               <select
+                id="torneo-modalidad"
+                name="modalidad"
                 className="form-select bg-dark text-light border-secondary"
                 value={form.modalidad}
                 onChange={(e) => setForm({ ...form, modalidad: e.target.value })}
@@ -265,37 +287,61 @@ export default function AdminPanel({
                 <option value="1v1">1v1</option>
               </select>
             </div>
+
             <div className="col-md-3">
-              <label className="form-label text-light small">Inicio *</label>
+              <label htmlFor="torneo-inicio" className="form-label text-light small">
+                Inicio *
+              </label>
               <input
+                id="torneo-inicio"
+                name="fechaInicio"
                 type="date"
                 className="form-control bg-dark text-light border-secondary"
                 value={form.fechaInicio}
                 onChange={(e) => setForm({ ...form, fechaInicio: e.target.value })}
+                required
               />
             </div>
+
             <div className="col-md-3">
-              <label className="form-label text-light small">Término *</label>
+              <label htmlFor="torneo-fin" className="form-label text-light small">
+                Término *
+              </label>
               <input
+                id="torneo-fin"
+                name="fechaFin"
                 type="date"
                 className="form-control bg-dark text-light border-secondary"
                 value={form.fechaFin}
                 onChange={(e) => setForm({ ...form, fechaFin: e.target.value })}
+                required
               />
             </div>
+
             <div className="col-md-3">
-              <label className="form-label text-light small">Cupo máximo *</label>
+              <label htmlFor="torneo-cupo" className="form-label text-light small">
+                Cupo máximo *
+              </label>
               <input
+                id="torneo-cupo"
+                name="cupoMaximo"
                 type="number"
                 min="2"
+                placeholder="Ej: 16"
                 className="form-control bg-dark text-light border-secondary"
                 value={form.cupoMaximo}
                 onChange={(e) => setForm({ ...form, cupoMaximo: e.target.value })}
+                required
               />
             </div>
+
             <div className="col-md-3">
-              <label className="form-label text-light small">Estado *</label>
+              <label htmlFor="torneo-estado" className="form-label text-light small">
+                Estado *
+              </label>
               <select
+                id="torneo-estado"
+                name="estado"
                 className="form-select bg-dark text-light border-secondary"
                 value={form.estado}
                 onChange={(e) => setForm({ ...form, estado: e.target.value })}
@@ -305,6 +351,7 @@ export default function AdminPanel({
                 <option value="FINALIZADO">FINALIZADO</option>
               </select>
             </div>
+
             <div className="col-12 mt-3">
               <button type="submit" className="btn boton-primario w-100" disabled={enviando}>
                 {enviando
@@ -338,6 +385,7 @@ export default function AdminPanel({
                 </div>
                 <div className="d-flex flex-wrap align-items-center gap-2">
                   <select
+                    aria-label={`Estado de ${t.nombre}`}
                     className="form-select form-select-sm bg-dark text-light border-secondary w-auto"
                     value={t.estado}
                     onChange={(e) => cambiarEstado(t, e.target.value)}
