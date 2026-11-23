@@ -18,6 +18,12 @@ export default function AuthProvider({ children }) {
     setSesion(datos)
   }
 
+  async function registrar(credenciales) {
+    const datos = await authService.registro(credenciales)
+    guardarSesion(datos)
+    setSesion(datos)
+  }
+
   function logout() {
     borrarSesion()
     setSesion(null)
@@ -28,6 +34,7 @@ export default function AuthProvider({ children }) {
     autenticado: sesion !== null,
     esAdmin: sesion?.usuario?.rol === 'ADMIN',
     login,
+    registrar,
     logout,
   }
 

@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 
 export default function Navbar() {
-  const { autenticado, usuario, logout } = useAuth()
+  const { autenticado, usuario, esAdmin, logout } = useAuth()
   const navigate = useNavigate()
 
   const claseLink = ({ isActive }) =>
@@ -49,22 +49,44 @@ export default function Navbar() {
                 </li>
               </>
             )}
+            {esAdmin && (
+              <li className="nav-item">
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) =>
+                    isActive ? 'btn btn-warning text-dark fw-bold' : 'btn btn-outline-warning'
+                  }
+                >
+                  Admin
+                </NavLink>
+              </li>
+            )}
           </ul>
 
           <div className="d-flex align-items-center gap-2 ms-md-3">
             {autenticado ? (
               <>
                 <span className="text-light small">
-                  {usuario.email} <span className="badge bg-warning text-dark">{usuario.rol}</span>
+                  {usuario.email}{' '}
+                  <span className="badge bg-warning text-dark">{usuario.rol}</span>
                 </span>
-                <button type="button" className="btn btn-outline-danger btn-sm" onClick={cerrarSesion}>
+                <button
+                  type="button"
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={cerrarSesion}
+                >
                   Cerrar sesión
                 </button>
               </>
             ) : (
-              <NavLink to="/login" className="btn btn-outline-warning btn-sm">
-                Iniciar sesión
-              </NavLink>
+              <>
+                <NavLink to="/login" className="btn btn-outline-warning btn-sm">
+                  Iniciar sesión
+                </NavLink>
+                <NavLink to="/registro" className="btn boton-primario btn-sm">
+                  Registrarse
+                </NavLink>
+              </>
             )}
           </div>
         </nav>
