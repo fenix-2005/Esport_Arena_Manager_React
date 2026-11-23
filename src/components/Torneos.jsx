@@ -2,12 +2,23 @@ import { useState } from 'react'
 import TarjetaTorneo from './TarjetaTorneo'
 import { validarRangoFechas } from '../logica/validaciones'
 
-function Torneos({ torneos, onSeleccionarDetalle }) {
+function Torneos({ torneos, onSeleccionarDetalle, onRefrescar }) {
   const [busqueda, setBusqueda] = useState('')
   const [juegoFiltro, setJuegoFiltro] = useState('')
   const [fechaInicio, setFechaInicio] = useState('')
   const [fechaFin, setFechaFin] = useState('')
   const [errorFiltro, setErrorFiltro] = useState('')
+  const [refrescando, setRefrescando] = useState(false)
+
+  const refrescar = async () => {
+    if (!onRefrescar) return
+    setRefrescando(true)
+    try {
+      await onRefrescar()
+    } finally {
+      setRefrescando(false)
+    }
+  }
 
   const aplicarFiltros = (e) => {
     e.preventDefault()
@@ -43,7 +54,17 @@ function Torneos({ torneos, onSeleccionarDetalle }) {
 
   return (
     <div>
-      <h2 className="text-info text-center mb-4">Catálogo de Torneos</h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="text-info m-0">Catálogo de Torneos</h2>
+        <button
+          type="button"
+          className="btn btn-outline-info btn-sm"
+          disabled={refrescando}
+          onClick={refrescar}
+        >
+          {refrescando ? 'Actualizando...' : 'Refrescar'}
+        </button>
+      </div>
 
       <form className="card tarjeta border-secondary p-3 mb-4" onSubmit={aplicarFiltros}>
         {errorFiltro && <small className="alerta mb-2 d-block">{errorFiltro}</small>}

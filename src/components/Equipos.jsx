@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
 import { equiposService } from '../services/equipos'
 
@@ -14,6 +14,7 @@ function Equipos() {
   const [busqueda, setBusqueda] = useState('')
   const [cargando, setCargando] = useState(true)
   const [lento, setLento] = useState(false)
+  const [refrescando, setRefrescando] = useState(false)
   const [errorCarga, setErrorCarga] = useState(null)
 
   const [form, setForm] = useState({ nombre: '', juegoPrincipalId: 1 })
@@ -21,20 +22,33 @@ function Equipos() {
   const [exito, setExito] = useState('')
   const [enviando, setEnviando] = useState(false)
 
+  const cargarEquipos = useCallback(async () => {
+    setErrorCarga(null)
+    try {
+      const lista = await equiposService.listar()
+      setEquipos(lista)
+    } catch (e) {
+      setErrorCarga(e.message)
+    }
+  }, [])
+
   useEffect(() => {
     const aviso = setTimeout(() => setLento(true), 4000)
-
-    equiposService
-      .listar()
-      .then(setEquipos)
-      .catch((e) => setErrorCarga(e.message))
-      .finally(() => {
-        clearTimeout(aviso)
-        setCargando(false)
-      })
-
+    cargarEquipos().finally(() => {
+      clearTimeout(aviso)
+      setCargando(false)
+    })
     return () => clearTimeout(aviso)
-  }, [])
+  }, [cargarEquipos])
+
+  const refrescar = async () => {
+    setRefrescando(true)
+    try {
+      await cargarEquipos()
+    } finally {
+      setRefrescando(false)
+    }
+  }
 
   const nombreJuego = (id) => JUEGOS.find((j) => j.id === Number(id))?.nombre || `Juego #${id}`
 
@@ -138,13 +152,23 @@ function Equipos() {
         <div className="card tarjeta border-secondary p-4">
           <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <h4 className="text-info m-0">Equipos Registrados ({equiposFiltrados.length})</h4>
-            <input
-              type="search"
-              className="form-control form-control-sm bg-dark text-light border-secondary w-auto"
-              placeholder="Buscar por nombre o juego..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
+            <div className="d-flex align-items-center gap-2">
+              <input
+                type="search"
+                className="form-control form-control-sm bg-dark text-light border-secondary w-auto"
+                placeholder="Buscar por nombre o juego..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+              <button
+                type="button"
+                className="btn btn-outline-info btn-sm"
+                disabled={refrescando}
+                onClick={refrescar}
+              >
+                {refrescando ? '...' : 'Refrescar'}
+              </button>
+            </div>
           </div>
 
           {cargando ? (

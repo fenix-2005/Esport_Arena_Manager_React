@@ -9,10 +9,11 @@ import DetalleTorneo from './components/DetalleTorneo'
 import Inscripcion from './components/Inscripcion'
 import Equipos from './components/Equipos'
 import Perfil from './components/Perfil'
+import AdminPanel from './components/AdminPanel'
 import Login from './components/Login'
-import RutaProtegida from './auth/RutaProtegida'
 import Registro from './components/Registro'
 import NoEncontrado from './components/NoEncontrado'
+import RutaProtegida from './auth/RutaProtegida'
 
 function App() {
   const navigate = useNavigate()
@@ -73,6 +74,11 @@ function App() {
     setTorneos(torneos.filter((t) => t.id !== id))
   }
 
+  const refrescarTorneos = async () => {
+    const lista = await torneosService.listar()
+    setTorneos(lista)
+  }
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar />
@@ -85,7 +91,13 @@ function App() {
           />
           <Route
             path="/torneos"
-            element={<Torneos torneos={torneos} onSeleccionarDetalle={irADetalleTorneo} />}
+            element={
+              <Torneos
+                torneos={torneos}
+                onSeleccionarDetalle={irADetalleTorneo}
+                onRefrescar={refrescarTorneos}
+              />
+            }
           />
           <Route
             path="/torneos/:id"
@@ -99,6 +111,7 @@ function App() {
           />
           <Route path="/equipos" element={<Equipos />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
           <Route
             path="/inscripcion"
             element={
@@ -111,12 +124,7 @@ function App() {
             path="/perfil"
             element={
               <RutaProtegida>
-                <Perfil
-                  torneos={torneos}
-                  onAgregarTorneo={agregarTorneo}
-                  onActualizarTorneo={actualizarTorneo}
-                  onEliminarTorneo={eliminarTorneo}
-                />
+                <Perfil torneos={torneos} />
               </RutaProtegida>
             }
           />
@@ -124,16 +132,16 @@ function App() {
             path="/admin"
             element={
               <RutaProtegida rol="ADMIN">
-                <Perfil
+                <AdminPanel
                   torneos={torneos}
                   onAgregarTorneo={agregarTorneo}
                   onActualizarTorneo={actualizarTorneo}
                   onEliminarTorneo={eliminarTorneo}
+                  onRefrescar={refrescarTorneos}
                 />
               </RutaProtegida>
             }
           />
-          <Route path="/registro" element={<Registro />} />
           <Route path="*" element={<NoEncontrado />} />
         </Routes>
       </main>
