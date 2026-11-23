@@ -6,7 +6,7 @@ async function extraerErrorBackend(res, baseUrl) {
 
   const limpio = texto.trim()
   if (limpio.startsWith('<')) {
-    return `El servidor (${baseUrl}) devolvió una página HTML (código ${res.status}) en lugar de datos. Es probable que la URL esté mal configurada o el servicio aún se esté iniciando.`
+    return `El servidor (${baseUrl}) devolvió una página HTML (código ${res.status}) en lugar de datos.`
   }
 
   try {
@@ -28,7 +28,7 @@ async function extraerErrorBackend(res, baseUrl) {
 export async function solicitar(baseUrl, ruta, opciones = {}) {
   if (!baseUrl) {
     throw new Error(
-      'No está configurada la URL del backend (falta definir la variable VITE_*_URL en Vercel o en .env.development).'
+      'Backend no disponible.'
     )
   }
 
@@ -47,7 +47,7 @@ export async function solicitar(baseUrl, ruta, opciones = {}) {
     })
   } catch {
     throw new Error(
-      `No se pudo conectar con el servidor (${baseUrl}). Verifica que el backend esté encendido o espera a que despierte.`
+      `No se pudo conectar con el servidor (${baseUrl}).`
     )
   }
 
@@ -66,7 +66,7 @@ export async function solicitar(baseUrl, ruta, opciones = {}) {
   const tipo = res.headers.get('content-type') || ''
   if (!tipo.includes('application/json')) {
     throw new Error(
-      `El servidor (${baseUrl}) respondió con HTML en lugar de JSON. Revisa que la URL termine en /api/v1 y que la variable de entorno esté bien configurada.`
+      `El servidor (${baseUrl}) respondió con HTML en lugar de JSON.`
     )
   }
 
