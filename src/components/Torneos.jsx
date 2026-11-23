@@ -2,13 +2,7 @@ import { useState } from 'react'
 import TarjetaTorneo from './TarjetaTorneo'
 import { validarRangoFechas } from '../logica/validaciones'
 
-const NOMBRES_JUEGOS = {
-  1: 'Valorant',
-  2: 'Counter-Strike 2',
-  3: 'League of Legends',
-}
-
-function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcion }) {
+function Torneos({ torneos, onSeleccionarDetalle }) {
   const [busqueda, setBusqueda] = useState('')
   const [juegoFiltro, setJuegoFiltro] = useState('')
   const [fechaInicio, setFechaInicio] = useState('')
@@ -36,43 +30,6 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
     setErrorFiltro('')
   }
 
-  if (torneoDetalle) {
-    const nombreJuego = NOMBRES_JUEGOS[torneoDetalle.juegoId] || `Juego #${torneoDetalle.juegoId}`
-    return (
-        <div className="card tarjeta border-secondary p-4 mx-auto" style={{ maxWidth: 700 }}>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3 className="text-info m-0">{torneoDetalle.nombre}</h3>
-            <span className="badge bg-info text-dark">{torneoDetalle.estado}</span>
-          </div>
-          <p className="text-secondary mb-2">
-            <strong>Juego:</strong> {nombreJuego}
-          </p>
-          <p className="mb-2">
-            <strong>Modalidad:</strong> {torneoDetalle.modalidad}
-          </p>
-          <p className="mb-2">
-            <strong>Fechas:</strong> {torneoDetalle.fechaInicio} al {torneoDetalle.fechaFin}
-          </p>
-          <p className="mb-3">
-            <strong>Cupo máximo:</strong> {torneoDetalle.cupoMaximo}
-          </p>
-
-          <div className="d-flex gap-2 mt-4">
-            <button
-                type="button"
-                className="btn btn-outline-light"
-                onClick={() => onSeleccionarDetalle(null)}
-            >
-              Volver al listado
-            </button>
-            <button type="button" className="btn boton-primario" onClick={onIrAInscripcion}>
-              Inscribirse a este Torneo
-            </button>
-          </div>
-        </div>
-    )
-  }
-
   const texto = busqueda.toLowerCase()
   const fechasValidas = validarRangoFechas(fechaInicio, fechaFin)
 
@@ -85,73 +42,77 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
   })
 
   return (
-      <div>
-        <h2 className="text-info text-center mb-4">Catálogo de Torneos</h2>
+    <div>
+      <h2 className="text-info text-center mb-4">Catálogo de Torneos</h2>
 
-        <form className="card tarjeta border-secondary p-3 mb-4" onSubmit={aplicarFiltros}>
-          {errorFiltro && <small className="alerta mb-2">{errorFiltro}</small>}
-          <div className="row g-3 align-items-end">
-            <div className="col-md-3">
-              <label className="form-label text-light">Nombre del Torneo</label>
-              <input
-                  className="form-control bg-dark text-light border-secondary"
-                  placeholder="Ej: Copa Valorant"
-                  value={busqueda}
-                  onChange={(e) => setBusqueda(e.target.value)}
-              />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label text-light">Juego</label>
-              <select
-                  className="form-select bg-dark text-light border-secondary"
-                  value={juegoFiltro}
-                  onChange={(e) => setJuegoFiltro(e.target.value)}
-              >
-                <option value="">Todos los juegos</option>
-                <option value="1">Valorant</option>
-                <option value="2">Counter-Strike 2</option>
-                <option value="3">League of Legends</option>
-              </select>
-            </div>
-            <div className="col-md-2">
-              <label className="form-label text-light">Desde</label>
-              <input
-                  type="date"
-                  className="form-control bg-dark text-light border-secondary"
-                  value={fechaInicio}
-                  onChange={(e) => setFechaInicio(e.target.value)}
-              />
-            </div>
-            <div className="col-md-2">
-              <label className="form-label text-light">Hasta</label>
-              <input
-                  type="date"
-                  className="form-control bg-dark text-light border-secondary"
-                  value={fechaFin}
-                  onChange={(e) => setFechaFin(e.target.value)}
-              />
-            </div>
-            <div className="col-md-2 d-flex gap-2">
-              <button type="submit" className="btn boton-primario w-100">
-                Filtrar
-              </button>
-              <button type="button" className="btn btn-outline-secondary" onClick={limpiar}>
-                Limpiar
-              </button>
-            </div>
+      <form className="card tarjeta border-secondary p-3 mb-4" onSubmit={aplicarFiltros}>
+        {errorFiltro && <small className="alerta mb-2 d-block">{errorFiltro}</small>}
+        <div className="row g-3 align-items-end">
+          <div className="col-md-3">
+            <label className="form-label text-light">Nombre del Torneo</label>
+            <input
+              className="form-control bg-dark text-light border-secondary"
+              placeholder="Ej: Copa Valorant"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
           </div>
-        </form>
+          <div className="col-md-3">
+            <label className="form-label text-light">Juego</label>
+            <select
+              className="form-select bg-dark text-light border-secondary"
+              value={juegoFiltro}
+              onChange={(e) => setJuegoFiltro(e.target.value)}
+            >
+              <option value="">Todos los juegos</option>
+              <option value="1">Valorant</option>
+              <option value="2">Counter-Strike 2</option>
+              <option value="3">League of Legends</option>
+            </select>
+          </div>
+          <div className="col-md-2">
+            <label className="form-label text-light">Desde</label>
+            <input
+              type="date"
+              className="form-control bg-dark text-light border-secondary"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+            />
+          </div>
+          <div className="col-md-2">
+            <label className="form-label text-light">Hasta</label>
+            <input
+              type="date"
+              className="form-control bg-dark text-light border-secondary"
+              value={fechaFin}
+              onChange={(e) => setFechaFin(e.target.value)}
+            />
+          </div>
+          <div className="col-md-2 d-flex gap-2">
+            <button type="submit" className="btn boton-primario w-100">
+              Filtrar
+            </button>
+            <button type="button" className="btn btn-outline-secondary" onClick={limpiar}>
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </form>
 
-        {filtrados.length === 0 ? (
-            <p className="alerta text-center">No se encontraron torneos con esos criterios.</p>
-        ) : (
-            <div className="row g-4">
-              {filtrados.map((t) => (
-                  <TarjetaTorneo key={t.id} torneo={t} onVerDetalle={onSeleccionarDetalle} />
-              ))}
-            </div>
-        )}
-      </div>
+      {torneos.length === 0 ? (
+        <p className="text-secondary text-center">
+          No hay torneos registrados en la base de datos todavía.
+        </p>
+      ) : filtrados.length === 0 ? (
+        <p className="alerta text-center">No se encontraron torneos con esos criterios.</p>
+      ) : (
+        <div className="row g-4">
+          {filtrados.map((t) => (
+            <TarjetaTorneo key={t.id} torneo={t} onVerDetalle={onSeleccionarDetalle} />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 

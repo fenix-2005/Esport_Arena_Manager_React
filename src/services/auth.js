@@ -8,4 +8,9 @@ export const authService = {
       method: 'POST',
       body: JSON.stringify(credenciales),
     }),
+  registro: (credenciales) =>
+    solicitar(AUTH_URL, '/auth/registro', {
+      method: 'POST',
+      body: JSON.stringify(credenciales),
+    }),
 }

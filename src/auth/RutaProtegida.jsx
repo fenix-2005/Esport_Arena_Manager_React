@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './useAuth'
+import AccesoDenegado from '../components/AccesoDenegado'
 
 export default function RutaProtegida({ children, rol }) {
   const { autenticado, usuario } = useAuth()
@@ -10,11 +11,7 @@ export default function RutaProtegida({ children, rol }) {
   }
 
   if (rol && usuario?.rol !== rol) {
-    return (
-      <div className="alert alert-danger mt-4">
-        No tienes permiso para ver esta página.
-      </div>
-    )
+    return <AccesoDenegado />
   }
 
   return children
