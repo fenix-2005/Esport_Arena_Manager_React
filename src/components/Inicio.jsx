@@ -15,17 +15,24 @@ function Inicio({ torneos, onIrADetalle }) {
         </div>
       </section>
 
-      {/* 2. Torneos  */}
       <div className="text-center mb-4">
-        <h2>Torneos </h2>
+        <h2>Torneos Activos</h2>
         <p className="text-secondary">Inscríbete en las competiciones de la temporada.</p>
       </div>
 
-      <section className="row g-4">
-        {torneos.map((t) => (
-          <TarjetaTorneo key={t.id} torneo={t} onVerDetalle={onIrADetalle} />
-        ))}
-      </section>
+      {torneos.length === 0 ? (
+        <div className="card tarjeta border-secondary p-4 text-center">
+          <p className="text-secondary mb-0">
+            No hay torneos registrados en la base de datos todavía.
+          </p>
+        </div>
+      ) : (
+        <section className="row g-4">
+          {torneos.map((t) => (
+            <TarjetaTorneo key={t.id} torneo={t} onVerDetalle={onIrADetalle} />
+          ))}
+        </section>
+      )}
     </div>
   )
 }

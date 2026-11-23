@@ -1,88 +1,155 @@
-import { useState } from 'react'
-import { torneosIniciales } from './logica/datos'
+import { useCallback, useEffect, useState } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import { torneosService } from './services/torneos'
+import Navbar from './components/Navbar'
+import CargandoServidor from './components/CargandoServidor'
 import Inicio from './components/Inicio'
 import Torneos from './components/Torneos'
+import DetalleTorneo from './components/DetalleTorneo'
 import Inscripcion from './components/Inscripcion'
 import Equipos from './components/Equipos'
 import Perfil from './components/Perfil'
-
-const SECCIONES = [
-  { id: 'inicio', titulo: 'Inicio' },
-  { id: 'torneos', titulo: 'Torneos' },
-  { id: 'inscripcion', titulo: 'Inscripción' },
-  { id: 'equipos', titulo: 'Equipos' },
-  { id: 'perfil', titulo: 'Perfil' },
-]
+import AdminPanel from './components/AdminPanel'
+import Login from './components/Login'
+import Registro from './components/Registro'
+import NoEncontrado from './components/NoEncontrado'
+import RutaProtegida from './auth/RutaProtegida'
 
 function App() {
-  const [activa, setActiva] = useState('inicio')
-  const [torneos, setTorneos] = useState(torneosIniciales)
-  const [torneoSeleccionado, setTorneoSeleccionado] = useState(null)
+  const navigate = useNavigate()
+  const [torneos, setTorneos] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [lento, setLento] = useState(false)
+  const [errorConexion, setErrorConexion] = useState(null)
 
-  const irADetalleTorneo = (torneo) => {
-    setTorneoSeleccionado(torneo)
-    setActiva('torneos')
+  const cargarDatos = useCallback(() => {
+    setCargando(true)
+    setLento(false)
+    setErrorConexion(null)
+
+    const aviso = setTimeout(() => setLento(true), 4000)
+
+    torneosService
+      .listar()
+      .then(setTorneos)
+      .catch((e) => setErrorConexion(e.message))
+      .finally(() => {
+        clearTimeout(aviso)
+        setCargando(false)
+      })
+
+    return () => clearTimeout(aviso)
+  }, [])
+
+  useEffect(() => {
+    return cargarDatos()
+  }, [cargarDatos])
+
+  if (cargando || errorConexion) {
+    return (
+      <CargandoServidor
+        lento={lento}
+        error={errorConexion}
+        onReintentar={cargarDatos}
+      />
+    )
   }
 
-  const agregarTorneo = (nuevo) => {
-    setTorneos([...torneos, nuevo])
+  const irADetalleTorneo = (torneo) => navigate(`/torneos/${torneo.id}`)
+
+  const agregarTorneo = async (nuevo) => {
+    const creado = await torneosService.crear(nuevo)
+    setTorneos([...torneos, creado])
+    return creado
   }
 
-  const eliminarTorneo = (id) => {
+  const actualizarTorneo = async (id, datos) => {
+    const actualizado = await torneosService.actualizar(id, datos)
+    setTorneos(torneos.map((t) => (t.id === id ? actualizado : t)))
+    return actualizado
+  }
+
+  const eliminarTorneo = async (id) => {
+    await torneosService.eliminar(id)
     setTorneos(torneos.filter((t) => t.id !== id))
+  }
+
+  const refrescarTorneos = async () => {
+    const lista = await torneosService.listar()
+    setTorneos(lista)
   }
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      <header className="py-3 shadow-sm">
-        <div className="container d-flex flex-wrap justify-content-between align-items-center">
-          <h1 className="titulo-principal">eSports Arena Manager</h1>
-          <nav>
-            <ul className="nav gap-1">
-              {SECCIONES.map((s) => (
-                <li key={s.id} className="nav-item">
-                  <button
-                    type="button"
-                    className={activa === s.id ? 'btn boton-primario' : 'btn btn-dark text-light'}
-                    onClick={() => {
-                      setTorneoSeleccionado(null)
-                      setActiva(s.id)
-                    }}
-                  >
-                    {s.titulo}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="container my-5">
-        {activa === 'inicio' && (
-          <Inicio torneos={torneos} onIrADetalle={irADetalleTorneo} />
-        )}
-        {activa === 'torneos' && (
-          <Torneos
-            torneos={torneos}
-            torneoDetalle={torneoSeleccionado}
-            onSeleccionarDetalle={setTorneoSeleccionado}
-            onIrAInscripcion={() => setActiva('inscripcion')}
+        <Routes>
+          <Route
+            path="/"
+            element={<Inicio torneos={torneos} onIrADetalle={irADetalleTorneo} />}
           />
-        )}
-        {activa === 'inscripcion' && <Inscripcion />}
-        {activa === 'equipos' && <Equipos />}
-        {activa === 'perfil' && (
-          <Perfil
-            torneos={torneos}
-            onAgregarTorneo={agregarTorneo}
-            onEliminarTorneo={eliminarTorneo}
+          <Route
+            path="/torneos"
+            element={
+              <Torneos
+                torneos={torneos}
+                onSeleccionarDetalle={irADetalleTorneo}
+                onRefrescar={refrescarTorneos}
+              />
+            }
           />
-        )}
+          <Route
+            path="/torneos/:id"
+            element={
+              <DetalleTorneo
+                torneos={torneos}
+                onActualizarTorneo={actualizarTorneo}
+                onEliminarTorneo={eliminarTorneo}
+              />
+            }
+          />
+          <Route path="/equipos" element={<Equipos />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
+          <Route
+            path="/inscripcion"
+            element={
+              <RutaProtegida>
+                <Inscripcion torneos={torneos} />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/perfil"
+            element={
+              <RutaProtegida>
+                <Perfil torneos={torneos} />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <RutaProtegida rol="ADMIN">
+                <AdminPanel
+                  torneos={torneos}
+                  onAgregarTorneo={agregarTorneo}
+                  onActualizarTorneo={actualizarTorneo}
+                  onEliminarTorneo={eliminarTorneo}
+                  onRefrescar={refrescarTorneos}
+                />
+              </RutaProtegida>
+            }
+          />
+          <Route path="*" element={<NoEncontrado />} />
+        </Routes>
       </main>
 
       <footer className="py-4 mt-auto text-center">
-        <p className="mb-0 text-secondary">© 2026 eSports Arena Manager. Todos los derechos reservados.</p>
+        <p className="mb-0 text-secondary">
+          © 2026 eSports Arena Manager. Todos los derechos reservados.
+        </p>
       </footer>
     </div>
   )

@@ -2,12 +2,23 @@ import { useState } from 'react'
 import TarjetaTorneo from './TarjetaTorneo'
 import { validarRangoFechas } from '../logica/validaciones'
 
-function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcion }) {
+function Torneos({ torneos, onSeleccionarDetalle, onRefrescar }) {
   const [busqueda, setBusqueda] = useState('')
   const [juegoFiltro, setJuegoFiltro] = useState('')
   const [fechaInicio, setFechaInicio] = useState('')
   const [fechaFin, setFechaFin] = useState('')
   const [errorFiltro, setErrorFiltro] = useState('')
+  const [refrescando, setRefrescando] = useState(false)
+
+  const refrescar = async () => {
+    if (!onRefrescar) return
+    setRefrescando(true)
+    try {
+      await onRefrescar()
+    } finally {
+      setRefrescando(false)
+    }
+  }
 
   const aplicarFiltros = (e) => {
     e.preventDefault()
@@ -30,46 +41,12 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
     setErrorFiltro('')
   }
 
-  
-  if (torneoDetalle) {
-    return (
-      <div className="card tarjeta border-secondary p-4 mx-auto" style={{ maxWidth: 700 }}>
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h3 className="text-info m-0">{torneoDetalle.nombre}</h3>
-          <span className={`badge ${torneoDetalle.color} text-dark`}>{torneoDetalle.estado}</span>
-        </div>
-        <p className="text-secondary mb-2"><strong>Juego:</strong> {torneoDetalle.juego}</p>
-        <p className="mb-2"><strong>Fechas:</strong> {torneoDetalle.fechaInicio} al {torneoDetalle.fechaFin}</p>
-        <p className="mb-2">
-          <strong>Precio inscripción:</strong>{' '}
-          {torneoDetalle.precio === 0 ? 'GRATIS ($0)' : `$${torneoDetalle.precio.toLocaleString('es-CL')}`}
-        </p>
-        <p className="mb-3"><strong>Cupos disponibles:</strong> {torneoDetalle.cupos}</p>
-        <p className="border-top border-secondary pt-3">{torneoDetalle.descripcion}</p>
-
-        <div className="d-flex gap-2 mt-4">
-          <button
-            type="button"
-            className="btn btn-outline-light"
-            onClick={() => onSeleccionarDetalle(null)}
-          >
-            Volver al listado
-          </button>
-          <button type="button" className="btn boton-primario" onClick={onIrAInscripcion}>
-            Inscribirse a este Torneo
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  
   const texto = busqueda.toLowerCase()
   const fechasValidas = validarRangoFechas(fechaInicio, fechaFin)
 
   const filtrados = torneos.filter((t) => {
     const coincideTexto = t.nombre.toLowerCase().includes(texto)
-    const coincideJuego = juegoFiltro === '' || t.juego === juegoFiltro
+    const coincideJuego = juegoFiltro === '' || String(t.juegoId) === juegoFiltro
     const coincideInicio = !fechasValidas || !fechaInicio || t.fechaInicio >= fechaInicio
     const coincideFin = !fechasValidas || !fechaFin || t.fechaFin <= fechaFin
     return coincideTexto && coincideJuego && coincideInicio && coincideFin
@@ -77,10 +54,20 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
 
   return (
     <div>
-      <h2 className="text-info text-center mb-4">Catálogo de Torneos</h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="text-info m-0">Catálogo de Torneos</h2>
+        <button
+          type="button"
+          className="btn btn-outline-info btn-sm"
+          disabled={refrescando}
+          onClick={refrescar}
+        >
+          {refrescando ? 'Actualizando...' : 'Refrescar'}
+        </button>
+      </div>
 
       <form className="card tarjeta border-secondary p-3 mb-4" onSubmit={aplicarFiltros}>
-        {errorFiltro && <small className="alerta mb-2">{errorFiltro}</small>}
+        {errorFiltro && <small className="alerta mb-2 d-block">{errorFiltro}</small>}
         <div className="row g-3 align-items-end">
           <div className="col-md-3">
             <label className="form-label text-light">Nombre del Torneo</label>
@@ -99,9 +86,9 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
               onChange={(e) => setJuegoFiltro(e.target.value)}
             >
               <option value="">Todos los juegos</option>
-              <option value="Valorant">Valorant</option>
-              <option value="Counter-Strike 2">Counter-Strike 2</option>
-              <option value="League of Legends">League of Legends</option>
+              <option value="1">Valorant</option>
+              <option value="2">Counter-Strike 2</option>
+              <option value="3">League of Legends</option>
             </select>
           </div>
           <div className="col-md-2">
@@ -123,13 +110,21 @@ function Torneos({ torneos, torneoDetalle, onSeleccionarDetalle, onIrAInscripcio
             />
           </div>
           <div className="col-md-2 d-flex gap-2">
-            <button type="submit" className="btn boton-primario w-100">Filtrar</button>
-            <button type="button" className="btn btn-outline-secondary" onClick={limpiar}>Limpiar</button>
+            <button type="submit" className="btn boton-primario w-100">
+              Filtrar
+            </button>
+            <button type="button" className="btn btn-outline-secondary" onClick={limpiar}>
+              Limpiar
+            </button>
           </div>
         </div>
       </form>
 
-      {filtrados.length === 0 ? (
+      {torneos.length === 0 ? (
+        <p className="text-secondary text-center">
+          No hay torneos registrados en la base de datos todavía.
+        </p>
+      ) : filtrados.length === 0 ? (
         <p className="alerta text-center">No se encontraron torneos con esos criterios.</p>
       ) : (
         <div className="row g-4">
